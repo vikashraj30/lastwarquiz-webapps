@@ -26,7 +26,7 @@ const QuizList: React.FC = () => {
   const [unlockedDifficulties, setUnlockedDifficulties] = useState<string[]>(['level1']);
   const [unlockModalOpen, setUnlockModalOpen] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
-  const [unlocking, setUnlocking] = useState(false);
+  const [unlocking, setUnlocking] = useState<boolean>(false);
   const [filters, setFilters] = useState<QuizFilters>({
     category: '',
     difficulty: '',
@@ -423,7 +423,7 @@ const QuizList: React.FC = () => {
               }}
               variant="outline"
               fullWidth
-              disabled={unlocking}
+              disabled={Boolean(unlocking)}
             >
               Cancel
             </Button>
@@ -431,7 +431,7 @@ const QuizList: React.FC = () => {
               onClick={handleUnlockDifficulty}
               variant="primary"
               fullWidth
-              disabled={!!unlocking || (userData && userData.coins < 200)}
+              disabled={Boolean(unlocking) || (userData && userData.coins < 200)}
             >
               {unlocking ? 'Unlocking...' : 'Unlock (200 🪙)'}
             </Button>
