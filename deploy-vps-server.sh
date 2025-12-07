@@ -15,10 +15,10 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}🚀 Last War Quiz - VPS Deployment${NC}"
 echo ""
 
-# Check if running as root or with sudo
+# Check if running as root - allow it but show warning
 if [ "$EUID" -eq 0 ]; then
-    echo -e "${RED}❌ Please don't run as root. Use a regular user with sudo privileges.${NC}"
-    exit 1
+    echo -e "${YELLOW}⚠️  Running as root. This is OK for deployment.${NC}"
+    echo ""
 fi
 
 # Get the directory where script is located
@@ -80,27 +80,39 @@ echo -e "${YELLOW}📁 Copying files to web directory...${NC}"
 sudo mkdir -p "$WEB_DIR"
 
 # Copy dist contents to web directory
-sudo cp -r dist/* "$WEB_DIR/"
-
-# Set proper permissions
-sudo chown -R www-data:www-data "$WEB_DIR"
-sudo chmod -R 755 "$WEB_DIR"
+if [ "$EUID" -eq 0 ]; then
+    cp -r dist/* "$WEB_DIR/"
+    chown -R www-data:www-data "$WEB_DIR"
+    chmod -R 755 "$WEB_DIR"
+else
+    sudo cp -r dist/* "$WEB_DIR/"
+    sudo chown -R www-data:www-data "$WEB_DIR"
+    sudo chmod -R 755 "$WEB_DIR"
+fi
 
 echo -e "${GREEN}✅ Files copied to $WEB_DIR${NC}"
 echo ""
 
 # Test Nginx configuration
 echo -e "${YELLOW}🔍 Testing Nginx configuration...${NC}"
-if sudo nginx -t 2>/dev/null; then
+if [ "$EUID" -eq 0 ]; then
+    NGINX_TEST="nginx -t"
+    NGINX_RELOAD="systemctl reload nginx"
+else
+    NGINX_TEST="sudo nginx -t"
+    NGINX_RELOAD="sudo systemctl reload nginx"
+fi
+
+if $NGINX_TEST 2>/dev/null; then
     echo -e "${GREEN}✅ Nginx configuration is valid${NC}"
     
     # Reload Nginx
     echo -e "${YELLOW}🔄 Reloading Nginx...${NC}"
-    sudo systemctl reload nginx
+    $NGINX_RELOAD
     echo -e "${GREEN}✅ Nginx reloaded${NC}"
 else
     echo -e "${RED}❌ Nginx configuration has errors!${NC}"
-    echo "Run: sudo nginx -t"
+    echo "Run: $NGINX_TEST"
     exit 1
 fi
 
