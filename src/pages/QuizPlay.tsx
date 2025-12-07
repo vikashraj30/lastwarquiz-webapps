@@ -12,7 +12,7 @@ import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
 import { getQuizById, submitQuiz } from '../services/api';
-import type { QuizDetails, Answer, QuizResult } from '../types';
+import type { QuizDetails, Answer } from '../types';
 
 /**
  * Quiz play page component

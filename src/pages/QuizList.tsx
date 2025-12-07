@@ -431,7 +431,7 @@ const QuizList: React.FC = () => {
               onClick={handleUnlockDifficulty}
               variant="primary"
               fullWidth
-              disabled={unlocking || (userData && userData.coins < 200)}
+              disabled={!!unlocking || (userData && userData.coins < 200)}
             >
               {unlocking ? 'Unlocking...' : 'Unlock (200 🪙)'}
             </Button>

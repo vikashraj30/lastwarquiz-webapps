@@ -3,7 +3,8 @@
  * Manages user data from backend API (coins, level, stats, etc.)
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { getUser, getUserStats, type UserData, type UserStats } from '../services/api';
 

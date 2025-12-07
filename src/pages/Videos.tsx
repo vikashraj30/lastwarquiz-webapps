@@ -121,7 +121,7 @@ const Videos: React.FC = () => {
           {categories.map((category) => (
             <button
               key={category}
-              onClick={() => setSelectedCategory(category === 'All' ? '' : category)}
+              onClick={() => setSelectedCategory(category === 'All' ? '' : (category || ''))}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 (category === 'All' && !selectedCategory) || selectedCategory === category
                   ? 'bg-indigo-600 text-white'

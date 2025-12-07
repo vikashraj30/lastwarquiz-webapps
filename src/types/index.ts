@@ -61,6 +61,8 @@ export interface ToastProps {
  * Quiz State Types
  */
 
+import type { Answer } from '../services/api';
+
 export interface QuizState {
   quizId: string;
   currentQuestionIndex: number;
