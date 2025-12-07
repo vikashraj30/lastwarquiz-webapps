@@ -1,0 +1,83 @@
+⚠️  FIREBASE CONFIGURATION REQUIRED
+====================================
+
+The web app is showing an empty page because Firebase credentials are missing.
+
+📋 FOLLOW THESE STEPS:
+
+STEP 1: Create .env.local file
+-------------------------------
+Create a new file in this directory:
+E:\Last War Survival\last_war_quiz\web-apps\last-war-quiz\.env.local
+
+STEP 2: Add Firebase Configuration
+-----------------------------------
+Copy and paste this content into .env.local:
+
+VITE_FIREBASE_API_KEY=your-api-key-here
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+
+STEP 3: Get Your Firebase Credentials
+--------------------------------------
+1. Go to: https://console.firebase.google.com/
+2. Select your project: "Last War Quiz"
+3. Click the ⚙️ gear icon → Project Settings
+4. Scroll down to "Your apps" section
+5. If you see a Web App:
+   - Click on it
+   - Copy the config values
+6. If you DON'T see a Web App:
+   - Click "Add app" → Web (</> icon)
+   - App nickname: "Last War Quiz Web"
+   - Click "Register app"
+   - Copy the config values shown
+
+STEP 4: Replace Values in .env.local
+-------------------------------------
+Replace each "your-xxx-here" with the actual values from Firebase Console
+
+Example:
+VITE_FIREBASE_API_KEY=AIzaSyAbcDefGhIjKlMnOpQrStUvWxYz12345
+VITE_FIREBASE_AUTH_DOMAIN=last-war-quiz.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=last-war-quiz
+VITE_FIREBASE_STORAGE_BUCKET=last-war-quiz.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
+VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef123456
+
+STEP 5: Restart the Dev Server
+-------------------------------
+1. In the terminal where "npm run dev" is running:
+   - Press Ctrl+C to stop
+2. Run again:
+   - npm run dev
+3. Open: http://localhost:5174/ (or whatever port is shown)
+
+STEP 6: Verify It Works
+------------------------
+- You should see the Login page with "Sign in with Google" button
+- If you still see an empty page, press F12 to open browser console
+- Check for any error messages
+
+⚠️  IMPORTANT NOTES:
+- All variables MUST start with VITE_ prefix
+- Do NOT commit .env.local to Git (it's already in .gitignore)
+- Keep your Firebase credentials secure
+- Never share your .env.local file
+
+✅ CHECKLIST:
+- [ ] Created .env.local file
+- [ ] Added all 6 Firebase config values
+- [ ] All values start with VITE_
+- [ ] Replaced placeholder values with real Firebase credentials
+- [ ] Restarted dev server
+- [ ] App loads successfully
+
+🆘 NEED HELP?
+- See README.md for more detailed instructions
+- Check browser console (F12) for error messages
+- Make sure you're on Firebase Console for the correct project
+
