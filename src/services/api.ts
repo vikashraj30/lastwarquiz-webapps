@@ -159,6 +159,17 @@ export const unlockDifficulty = async (difficulty: string) => {
 };
 
 /**
+ * Get all active difficulty levels (public endpoint)
+ */
+export const getDifficultyLevels = async () => {
+  // This is a public endpoint, so we don't need authentication
+  const response = await axios.get<ApiResponse<{ difficultyLevels: DifficultyLevel[]; count: number }>>(
+    `${API_BASE_URL}/api/v1/difficulty-levels`
+  );
+  return response.data;
+};
+
+/**
  * Quiz API Functions
  */
 
@@ -342,12 +353,19 @@ export interface UserStats {
   totalScore: number;
 }
 
+export interface DifficultyLevel {
+  levelNumber: number;
+  name: string;
+  displayName: string;
+  order: number;
+}
+
 export interface Quiz {
   _id: string;
   title: string;
   description?: string;
   category: string;
-  difficulty: 'level1' | 'level2' | 'level3' | 'level4' | 'level5' | 'level6' | 'level7' | 'level8' | 'level9' | 'level10';
+  difficulty: string; // Dynamic difficulty level
   rewardCoins: number;
   timeLimit: number;
   isFeatured: boolean;

@@ -8,7 +8,7 @@ import QuizCard from '../components/quiz/QuizCard';
 import { QuizCardSkeleton } from '../components/common/LoadingSkeleton';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
-import { getQuizzes, unlockDifficulty } from '../services/api';
+import { getQuizzes, unlockDifficulty, getDifficultyLevels, type DifficultyLevel } from '../services/api';
 import { useUser } from '../contexts/UserContext';
 import type { Quiz, QuizFilters } from '../types';
 import { sanitizeSearchQuery } from '../utils/validators';
@@ -41,7 +41,8 @@ const QuizList: React.FC = () => {
     pages: 1,
   });
 
-  const difficultyLevels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
+  const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>([]);
+  const [loadingLevels, setLoadingLevels] = useState(true);
 
   /**
    * Fetch quizzes with current filters
@@ -78,6 +79,40 @@ const QuizList: React.FC = () => {
       setLoading(false);
     }
   }, [filters]);
+
+  /**
+   * Fetch difficulty levels on mount
+   */
+  useEffect(() => {
+    const fetchDifficultyLevels = async () => {
+      try {
+        setLoadingLevels(true);
+        const response = await getDifficultyLevels();
+        if (response.success && response.data) {
+          setDifficultyLevels(response.data.difficultyLevels);
+        }
+      } catch (err) {
+        console.error('Error fetching difficulty levels:', err);
+        // Fallback to default levels if API fails
+        setDifficultyLevels([
+          { levelNumber: 1, name: 'level1', displayName: 'Level 1', order: 0 },
+          { levelNumber: 2, name: 'level2', displayName: 'Level 2', order: 1 },
+          { levelNumber: 3, name: 'level3', displayName: 'Level 3', order: 2 },
+          { levelNumber: 4, name: 'level4', displayName: 'Level 4', order: 3 },
+          { levelNumber: 5, name: 'level5', displayName: 'Level 5', order: 4 },
+          { levelNumber: 6, name: 'level6', displayName: 'Level 6', order: 5 },
+          { levelNumber: 7, name: 'level7', displayName: 'Level 7', order: 6 },
+          { levelNumber: 8, name: 'level8', displayName: 'Level 8', order: 7 },
+          { levelNumber: 9, name: 'level9', displayName: 'Level 9', order: 8 },
+          { levelNumber: 10, name: 'level10', displayName: 'Level 10', order: 9 }
+        ]);
+      } finally {
+        setLoadingLevels(false);
+      }
+    };
+
+    fetchDifficultyLevels();
+  }, []);
 
   /**
    * Fetch quizzes on mount and when filters change
@@ -206,55 +241,59 @@ const QuizList: React.FC = () => {
               Difficulty Level
             </label>
             <div className="grid grid-cols-5 gap-2">
-              {difficultyLevels.map((level) => {
-                const isUnlocked = unlockedDifficulties.includes(level);
-                const isSelected = filters.difficulty === level;
-                const levelNum = parseInt(level.replace('level', ''));
-                const previousLevel = levelNum > 1 ? `level${levelNum - 1}` : null;
-                const canUnlock = previousLevel ? unlockedDifficulties.includes(previousLevel) : true;
+              {loadingLevels ? (
+                <div className="col-span-5 text-center text-gray-500 py-2">Loading levels...</div>
+              ) : (
+                difficultyLevels.map((level) => {
+                  const isUnlocked = unlockedDifficulties.includes(level.name);
+                  const isSelected = filters.difficulty === level.name;
+                  const previousLevelIndex = difficultyLevels.findIndex(l => l.name === level.name) - 1;
+                  const previousLevel = previousLevelIndex >= 0 ? difficultyLevels[previousLevelIndex] : null;
+                  const canUnlock = previousLevel ? unlockedDifficulties.includes(previousLevel.name) : true;
 
-                return (
-                  <button
-                    key={level}
-                    onClick={() => {
-                      if (isUnlocked) {
-                        handleFilterChange('difficulty', isSelected ? '' : level);
-                      } else if (canUnlock) {
-                        openUnlockModal(level);
+                  return (
+                    <button
+                      key={level.name}
+                      onClick={() => {
+                        if (isUnlocked) {
+                          handleFilterChange('difficulty', isSelected ? '' : level.name);
+                        } else if (canUnlock) {
+                          openUnlockModal(level.name);
+                        }
+                      }}
+                      disabled={!isUnlocked && !canUnlock}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        isSelected
+                          ? 'bg-indigo-600 text-white'
+                          : isUnlocked
+                          ? 'bg-white border-2 border-indigo-300 text-indigo-700 hover:bg-indigo-50'
+                          : canUnlock
+                          ? 'bg-gray-100 border-2 border-gray-300 text-gray-600 hover:bg-gray-200'
+                          : 'bg-gray-50 border-2 border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
+                      }`}
+                      title={
+                        !isUnlocked && !canUnlock
+                          ? 'Complete previous level first'
+                          : !isUnlocked && canUnlock
+                          ? 'Click to unlock with 200 coins'
+                          : isSelected
+                          ? 'Click to deselect'
+                          : 'Click to filter'
                       }
-                    }}
-                    disabled={!isUnlocked && !canUnlock}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                      isSelected
-                        ? 'bg-indigo-600 text-white'
-                        : isUnlocked
-                        ? 'bg-white border-2 border-indigo-300 text-indigo-700 hover:bg-indigo-50'
-                        : canUnlock
-                        ? 'bg-gray-100 border-2 border-gray-300 text-gray-600 hover:bg-gray-200'
-                        : 'bg-gray-50 border-2 border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
-                    }`}
-                    title={
-                      !isUnlocked && !canUnlock
-                        ? 'Complete previous level first'
-                        : !isUnlocked && canUnlock
-                        ? 'Click to unlock with 200 coins'
-                        : isSelected
-                        ? 'Click to deselect'
-                        : 'Click to filter'
-                    }
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <span>{levelNum}</span>
-                      {!isUnlocked && canUnlock && (
-                        <span className="text-xs">🔓</span>
-                      )}
-                      {!isUnlocked && !canUnlock && (
-                        <span className="text-xs">🔒</span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        <span>{level.levelNumber}</span>
+                        {!isUnlocked && canUnlock && (
+                          <span className="text-xs">🔓</span>
+                        )}
+                        {!isUnlocked && !canUnlock && (
+                          <span className="text-xs">🔒</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
+              )}
             </div>
             {filters.difficulty && (
               <button
