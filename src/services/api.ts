@@ -326,6 +326,13 @@ export const trackVideoView = async (videoId: string) => {
  * Type Definitions
  */
 
+export interface DifficultyLevel {
+  levelNumber: number;
+  name: string;
+  displayName: string;
+  order: number;
+}
+
 export interface UserData {
   id: string;
   firebaseUid: string;
@@ -351,13 +358,6 @@ export interface UserStats {
   rank: number;
   level: number;
   totalScore: number;
-}
-
-export interface DifficultyLevel {
-  levelNumber: number;
-  name: string;
-  displayName: string;
-  order: number;
 }
 
 export interface Quiz {
