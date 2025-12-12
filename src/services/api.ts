@@ -160,11 +160,11 @@ export const unlockDifficulty = async (difficulty: string) => {
 
 /**
  * Get all active difficulty levels (public endpoint)
+ * Note: Uses api instance but auth is optional (interceptor handles no user gracefully)
  */
 export const getDifficultyLevels = async () => {
-  // This is a public endpoint, so we don't need authentication
-  const response = await axios.get<ApiResponse<{ difficultyLevels: DifficultyLevel[]; count: number }>>(
-    `${API_BASE_URL}/api/v1/difficulty-levels`
+  const response = await api.get<ApiResponse<{ difficultyLevels: DifficultyLevel[]; count: number }>>(
+    '/api/v1/difficulty-levels'
   );
   return response.data;
 };
